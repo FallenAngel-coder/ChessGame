@@ -26,9 +26,7 @@ namespace ChessGame.Model
         public static Board Initial()
         {
             Board board = new Board();
-
             board.AddStartingPieces();
-
             return board;
         }
 

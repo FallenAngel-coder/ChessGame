@@ -64,8 +64,6 @@ namespace ChessGame.ViewModel
 
         private void IsFlipped(Player player)
         {
-            System.Diagnostics.Debug.WriteLine($"Перевірка кольору для повороту: {player}");
-
             if (player == Player.Black)
             {
                 BoardRotation = 180;

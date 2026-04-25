@@ -12,10 +12,9 @@ namespace ChessGame.ViewModel.Game
     public class CellsViewModel : BaseViewModel
     {
         public ObservableCollection<CellViewModel> BoardCells { get; set; } = new ObservableCollection<CellViewModel>();
-        private readonly Dictionary<Position, Move> _moveCache;
-        public CellsViewModel(Dictionary<Position, Move> moveCache)
+        public CellsViewModel()
         {
-            _moveCache = moveCache;
+
         }
         public void InitializeCells()
         {
@@ -39,7 +38,8 @@ namespace ChessGame.ViewModel.Game
                 for (int c = 0; c < 8; c++)
                 {
                     Piece piece = board[r, c];
-                    BoardCells.First(item => item.Position.Row == r && item.Position.Column == c).ImagePath = Images.GetImage(piece);
+                    int index = r * 8 + c;
+                    BoardCells[index].ImagePath = Images.GetImage(piece);
                 }
             }
         }

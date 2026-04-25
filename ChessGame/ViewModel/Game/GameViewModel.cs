@@ -67,8 +67,8 @@ namespace ChessGame.ViewModel
 
         private void InitializeBoard()
         {
-            CellsViewModel = new CellsViewModel(moveCache);
-            HighlightsViewModel = new HighlightsViewModel(moveCache);
+            CellsViewModel = new CellsViewModel();
+            HighlightsViewModel = new HighlightsViewModel();
             
             CellsViewModel.InitializeCells();
             HighlightsViewModel.InitializeHighlights();
@@ -109,7 +109,7 @@ namespace ChessGame.ViewModel
 
             SelectedPos = pos;
             CacheMoves(moves);
-            HighlightsViewModel.ShowHighlights();
+            HighlightsViewModel.ShowHighlights(moveCache.Keys);
         }
         private void OnToPositionSelected(Position pos)
         {

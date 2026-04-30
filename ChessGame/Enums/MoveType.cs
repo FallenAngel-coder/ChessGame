@@ -11,6 +11,8 @@ namespace ChessGame.Model
         NormalMove,
         PawnPromotion,
         DoublePawn,
-        EnPassant
+        EnPassant,
+        CastleKS,
+        CastleQS
     }
 }

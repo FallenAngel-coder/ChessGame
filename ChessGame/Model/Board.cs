@@ -82,7 +82,7 @@ namespace ChessGame.Model
             Board copy = new Board(_pieceCounter);
             for (int r = 0; r < Size; r++)
             {
-                for (int c = 0; c < 8; c++)
+                for (int c = 0; c < Size; c++)
                 {
                     if (pieces[r, c] != null)
                     {
@@ -90,6 +90,10 @@ namespace ChessGame.Model
                     }
                 }
             }
+
+            copy.pawnSkipPositions[Player.White] = this.pawnSkipPositions[Player.White];
+            copy.pawnSkipPositions[Player.Black] = this.pawnSkipPositions[Player.Black];
+
             return copy;
         }
 

@@ -27,10 +27,11 @@ namespace ChessGame.Services
                 }
 
                 _currentView = value;
-                NotifyPropertyChanged();
+                ViewChanged?.Invoke();
             }
         }
 
+        public event Action ViewChanged;
         public NavigationService(IServiceProvider provider)
         {
             _provider = provider;
@@ -44,12 +45,6 @@ namespace ChessGame.Services
         public void NavigateTo(BaseViewModel viewModel)
         {
             CurrentView = viewModel;
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

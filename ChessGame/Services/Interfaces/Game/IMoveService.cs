@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChessGame.Services.Interfaces.Utils
+namespace ChessGame.Services
 {
-    public interface IPieceFactory
+    public interface IMoveService
     {
-        IPiece CreatePiece(PieceType type, Player color);
+        IEnumerable<Move> GetMoves(IPiece piece, Position from, IBoard board);
     }
 }

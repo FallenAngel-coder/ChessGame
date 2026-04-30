@@ -4,8 +4,8 @@ namespace ChessGame.Model
 {
     public interface IBoard
     {
-        Piece this[int row, int col] { get; set; }
-        Piece this[Position pos] { get; set; }
+        IPiece this[int row, int col] { get; set; }
+        IPiece this[Position pos] { get; set; }
 
         bool IsEmpty(Position pos);
         bool IsInside(Position pos);

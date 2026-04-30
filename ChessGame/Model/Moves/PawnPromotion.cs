@@ -28,7 +28,7 @@ namespace ChessGame.Model.Moves
 
         public override void Execute(IBoard board)
         {
-            Piece pawn = board[FromPos];
+            IPiece pawn = board[FromPos];
             Player color = pawn.Color;
 
             board[FromPos] = null;

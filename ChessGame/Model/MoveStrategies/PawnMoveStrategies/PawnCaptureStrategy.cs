@@ -1,25 +1,21 @@
-﻿using ChessGame.Model.Attributes;
-using ChessGame.Model.Moves;
+﻿using ChessGame.Model.Moves;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChessGame.Model.MoveStrategies
+namespace ChessGame.Model
 {
-    [PawnMoveStrategies]
-    public class PawnCaptureStrategy : IMoveStrategy
+    public class PawnCaptureStrategy : MoveStrategyBase<Pawn>
     {
-        public IEnumerable<Move> GetMoves(Position from, IBoard board, Piece piece)
+        protected override IEnumerable<Move> GetMoves(Position from, IBoard board, Pawn pawn)
         {
-            var pawn = piece as Pawn;
-            if (pawn == null)
-                yield break;
+            var player = pawn.Color;
 
-            foreach (var dir in pawn.CaptureDirections)
+            foreach (var dir in pawn.CaptureDirections())
             {
-                Position target = from + pawn.Forward + dir;
+                Position target = from + dir;
 
                 if (!board.IsInside(target))
                     continue;

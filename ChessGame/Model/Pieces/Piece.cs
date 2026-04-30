@@ -1,24 +1,17 @@
-﻿using ChessGame.Model;
-using ChessGame.Model.MoveStrategies;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace ChessGame
+namespace ChessGame.Model
 {
-    public abstract class Piece
+    public abstract class Piece : IPiece
     {
-        protected IMoveStrategy MoveStrategy { get; }
-
-        protected Piece(IMoveStrategy moveStrategy)
-        {
-            MoveStrategy = moveStrategy;
-        }
-
         public abstract PieceType Type { get; }
         public abstract Player Color { get; }
         public bool HasMoved { get; set; }
 
-        public IEnumerable<Move> GetMoves(Position from, IBoard board)
-            => MoveStrategy.GetMoves(from, board, this);
-
-        public abstract Piece Copy();
+        public abstract IPiece Copy();
     }
 }

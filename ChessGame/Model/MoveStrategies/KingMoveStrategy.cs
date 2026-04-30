@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ChessGame.Model.MoveStrategies
 {
-    public class KingMoveStrategy : IMoveStrategy
+    public class KingMoveStrategy : MoveStrategyBase<King>
     {
         private static readonly Direction[] dirs =
         {
@@ -17,7 +17,7 @@ namespace ChessGame.Model.MoveStrategies
             Direction.SouthEast, Direction.SouthWest
         };
 
-        public IEnumerable<Move> GetMoves(Position from, IBoard board, Piece piece)
+        protected override IEnumerable<Move> GetMoves(Position from, IBoard board, King king)
         {
             foreach (var dir in dirs)
             {
@@ -26,7 +26,7 @@ namespace ChessGame.Model.MoveStrategies
                 if (!board.IsInside(to))
                     continue;
 
-                if (board.IsEmpty(to) || board[to].Color != piece.Color)
+                if (board.IsEmpty(to) || board[to].Color != king.Color)
                 {
                     yield return new NormalMove(from, to);
                 }

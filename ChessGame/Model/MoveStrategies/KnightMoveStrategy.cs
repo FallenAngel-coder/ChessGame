@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace ChessGame.Model.MoveStrategies
 {
-    public class KnightMoveStrategy : IMoveStrategy
+    public class KnightMoveStrategy : MoveStrategyBase<Knight>
     {
-        public IEnumerable<Move> GetMoves(Position from, IBoard board, Piece piece)
+        protected override IEnumerable<Move> GetMoves(Position from, IBoard board, Knight knight)
         {
             foreach (var pos in PotentialPositions(from))
             {
                 if (!board.IsInside(pos))
                     continue;
 
-                if (board.IsEmpty(pos) || board[pos].Color != piece.Color)
+                if (board.IsEmpty(pos) || board[pos].Color != knight.Color)
                     yield return new NormalMove(from, pos);
             }
         }

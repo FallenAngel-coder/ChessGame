@@ -11,24 +11,14 @@ namespace ChessGame
         public override PieceType Type => PieceType.Pawn;
         public override Player Color { get; }
 
-        public Direction Forward { get; }
-        public IEnumerable<Direction> CaptureDirections { get; }
-
-        public Pawn(Player player, IMoveStrategy strategy)
-            : base(strategy)
+        public Pawn(Player player)
         {
             Color = player;
-
-            Forward = player == Player.White ? Direction.North : Direction.South;
-            CaptureDirections = new[] { Direction.West, Direction.East };
         }
 
-        public override Piece Copy()
+        public override IPiece Copy()
         {
-            return new Pawn(Color, MoveStrategy)
-            {
-                HasMoved = this.HasMoved
-            };
+            return new Pawn(Color) { HasMoved = this.HasMoved };
         }
     }
 }

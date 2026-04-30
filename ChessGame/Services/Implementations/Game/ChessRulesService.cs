@@ -9,15 +9,17 @@ namespace ChessGame.Services
     public class ChessRulesService : IChessRulesService
     {
         private readonly IMoveFactory _moveFactory;
+        private readonly IMoveService _moveService;
 
         private static readonly PieceType[] _promotionTypes =
         {
             PieceType.Queen, PieceType.Rook, PieceType.Bishop, PieceType.Knight
         };
 
-        public ChessRulesService(IMoveFactory moveFactory)
+        public ChessRulesService(IMoveFactory moveFactory, IMoveService moveService)
         {
             _moveFactory = moveFactory;
+            _moveService = moveService;
         }
 
         public IEnumerable<Move> GetLegalMoves(IBoard board, Player player, Position pos)
@@ -30,7 +32,8 @@ namespace ChessGame.Services
             if (piece.Color != player)
                 return Enumerable.Empty<Move>();
 
-            var candidates = piece.GetMoves(pos, board);
+            var candidates = _moveService.GetMoves(piece, pos, board);
+
             var expandedMoves = new List<Move>();
 
             foreach (var move in candidates)
@@ -113,7 +116,7 @@ namespace ChessGame.Services
                 }
                 else
                 {
-                    var attacks = piece.GetMoves(pos, board);
+                    var attacks = _moveService.GetMoves(piece, pos, board);
 
                     if (attacks.Any(m => m.ToPos == kingPos))
                         return true;

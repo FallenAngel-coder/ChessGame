@@ -84,4 +84,8 @@
     </Resource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Model\Attributes\" />
+  </ItemGroup>
+
 </Project>

@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChessGame.Model.MoveStrategies
+namespace ChessGame.Model
 {
     public interface IMoveStrategy
     {
-        IEnumerable<Move> GetMoves(Position from, IBoard board, Piece piece);
+        bool CanHandle(IPiece piece);
+        IEnumerable<Move> GetMoves(Position from, IBoard board, IPiece piece);
     }
 }

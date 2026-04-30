@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 
 namespace ChessGame.Services.Interfaces
 {
-    public interface INavigationService : INotifyPropertyChanged
+    public interface INavigationService
     {
         BaseViewModel CurrentView { get; }
+        event Action ViewChanged;
         void NavigateTo<T>() where T : BaseViewModel;
         void NavigateTo(BaseViewModel viewModel);
     }

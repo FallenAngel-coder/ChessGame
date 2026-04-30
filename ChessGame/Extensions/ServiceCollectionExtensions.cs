@@ -1,6 +1,5 @@
 ﻿using ChessGame.Model;
 using ChessGame.Model.Abstractions;
-using ChessGame.Model.Attributes;
 using ChessGame.Model.Data;
 using ChessGame.Model.MoveStrategies;
 using ChessGame.Model.Rules;
@@ -13,11 +12,9 @@ using ChessGame.Services.Implementations.Factories;
 using ChessGame.Services.Implementations.Game;
 using ChessGame.Services.Implementations.Network;
 using ChessGame.Services.Implementations.Utils;
-using ChessGame.Services.Implementations.Utils.PieceFactories;
 using ChessGame.Services.Interfaces;
 using ChessGame.Services.Interfaces.Factories;
 using ChessGame.Services.Interfaces.Utils;
-using ChessGame.Services.Interfaces.Utils.PieceFactories;
 using ChessGame.ViewModel;
 using ChessGame.ViewModel.Game;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,13 +25,10 @@ using System.Reflection;
 
 namespace ChessGame.Extensions
 {
-    /// <summary>
-    /// Extension methods for configuring application services
-    /// </summary>
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Registers core application services (Navigation, Network, Settings)
+        /// Registers all services that are not factories, strategies, rules or message handlers
         /// </summary>
         public static IServiceCollection AddAppServices(this IServiceCollection services)
         {
@@ -49,13 +43,11 @@ namespace ChessGame.Extensions
             services.AddSingleton<IGameService, GameService>();
             services.AddSingleton<IChessRulesService, ChessRulesService>();
             services.AddSingleton<IGameHistoryService, GameHistoryService>();
+            services.AddSingleton<IMoveService, MoveService>();
 
             return services;
         }
 
-        /// <summary>
-        /// Registers all factories
-        /// </summary>
         public static IServiceCollection AddFactories(this IServiceCollection services)
         {
             services.AddSingleton<IBoardFactory, BoardFactory>();
@@ -74,44 +66,29 @@ namespace ChessGame.Extensions
         }
 
         /// <summary>
-        /// Registers all IMoveStrategy implementations and groups them by attributes
+        /// Registers all IMoveStrategy implementations
         /// </summary>
         public static IServiceCollection AddMoveStrategies(this IServiceCollection services)
         {
-            // Get all strategy types
             var strategyType = typeof(IMoveStrategy);
+
             var strategies = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(s => s.GetTypes())
-                .Where(t => strategyType.IsAssignableFrom(t)
-                    && !t.IsInterface
-                    && !t.IsAbstract
-                    && t != typeof(CompositeMoveStrategy))
+                .SelectMany(a => a.GetTypes())
+                .Where(t =>
+                    !t.IsAbstract &&
+                    !t.IsInterface &&
+                    strategyType.IsAssignableFrom(t))
                 .ToList();
 
             foreach (var strategy in strategies)
             {
-                services.AddSingleton(strategyType, strategy);
+                services.AddSingleton(typeof(IMoveStrategy), strategy);
             }
-
-            var pawnStrategies = strategies
-                .Where(t => t.GetCustomAttribute<PawnMoveStrategiesAttribute>() != null)
-                .ToList();
-
-            services.AddSingleton<CompositeMoveStrategy>(sp =>
-            {
-                var instances = pawnStrategies
-                    .Select(t => (IMoveStrategy)sp.GetRequiredService(t))
-                    .ToList();
-                return new CompositeMoveStrategy(instances);
-            });
 
             return services;
         }
 
-        /// <summary>
-        /// Registers all end-game rules
-        /// </summary>
-        public static IServiceCollection AddGameRules(this IServiceCollection services)
+        public static IServiceCollection AddEndGameRules(this IServiceCollection services)
         {
             services.AddSingleton<IEndGameRulePipeline, EndGameRulePipeline>();
 
@@ -123,9 +100,6 @@ namespace ChessGame.Extensions
             return services;
         }
 
-        /// <summary>
-        /// Registers all message handlers for network communication
-        /// </summary>
         public static IServiceCollection AddMessageHandlers(this IServiceCollection services)
         {
             services.AddTransient<IMessageHandler<DtoStartGame>, StartGameHandler>();
@@ -143,9 +117,6 @@ namespace ChessGame.Extensions
             return services;
         }
 
-        /// <summary>
-        /// Registers view models for UI layer
-        /// </summary>
         public static IServiceCollection AddViewModels(this IServiceCollection services)
         {
             services.AddSingleton<IViewModelFactory<LobbyParams>, LobbyViewModelFactory>();

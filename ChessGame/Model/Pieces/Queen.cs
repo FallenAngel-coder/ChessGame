@@ -8,18 +8,14 @@ namespace ChessGame
         public override PieceType Type => PieceType.Queen;
         public override Player Color { get; }
 
-        public Queen(Player player, IMoveStrategy moveStrategy)
-            : base(moveStrategy)
+        public Queen(Player player)
         {
             Color = player;
         }
 
-        public override Piece Copy()
+        public override IPiece Copy()
         {
-            return new Queen(Color, MoveStrategy)
-            {
-                HasMoved = this.HasMoved
-            };
+            return new Queen(Color) { HasMoved = this.HasMoved };
         }
     }
 }

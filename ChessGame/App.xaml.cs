@@ -19,7 +19,7 @@ namespace ChessGame
             services.AddAppServices();
             services.AddFactories();
             services.AddMoveStrategies();
-            services.AddGameRules();
+            services.AddEndGameRules();
             services.AddMessageHandlers();
             services.AddViewModels();
 

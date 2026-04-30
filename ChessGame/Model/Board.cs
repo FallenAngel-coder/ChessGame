@@ -9,7 +9,7 @@ namespace ChessGame.Model
     public class Board : IBoard
     {
         public const int Size = 8;
-        private readonly Piece[,] pieces = new Piece[Size, Size];
+        private readonly IPiece[,] pieces = new IPiece[Size, Size];
         private readonly Dictionary<Player, Position> pawnSkipPositions = new Dictionary<Player, Position>
         {
             [Player.White] = null,
@@ -21,13 +21,13 @@ namespace ChessGame.Model
         {
             _pieceCounter = pieceCounter ?? new StandardPieceCounter();
         }
-        public Piece this[int row, int col]
+        public IPiece this[int row, int col]
         {
             get { return pieces[row, col]; }
             set { pieces[row, col] = value; }
         }
 
-        public Piece this[Position pos]
+        public IPiece this[Position pos]
         {
             get { return pieces[pos.Row, pos.Column]; }
             set { pieces[pos.Row, pos.Column] = value; }
@@ -104,7 +104,7 @@ namespace ChessGame.Model
             {
                 for (int c = 0; c < Size; c++)
                 {
-                    Piece p = pieces[r, c];
+                    IPiece p = pieces[r, c];
                     if (p == null)
                     {
                         sb.Append('-');

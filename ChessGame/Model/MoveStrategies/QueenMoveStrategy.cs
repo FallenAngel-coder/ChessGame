@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ChessGame.Model.MoveStrategies
 {
-    public class QueenMoveStrategy : IMoveStrategy
+    public class QueenMoveStrategy : MoveStrategyBase<Queen>
     {
         private static readonly Direction[] dirs =
         {
@@ -17,9 +17,9 @@ namespace ChessGame.Model.MoveStrategies
             Direction.SouthEast, Direction.SouthWest
         };
 
-        public IEnumerable<Move> GetMoves(Position from, IBoard board, Piece piece)
+        protected override IEnumerable<Move> GetMoves(Position from, IBoard board, Queen queen)
         {
-            return MoveHelper.Ray(from, board, dirs, piece.Color)
+            return MoveHelper.Ray(from, board, dirs, queen.Color)
                 .Select(to => new NormalMove(from, to));
         }
     }

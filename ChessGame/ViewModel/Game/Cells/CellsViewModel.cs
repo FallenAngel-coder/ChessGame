@@ -37,7 +37,7 @@ namespace ChessGame.ViewModel.Game
             {
                 for (int c = 0; c < 8; c++)
                 {
-                    Piece piece = board[r, c];
+                    IPiece piece = board[r, c];
                     int index = r * 8 + c;
                     BoardCells[index].ImagePath = Images.GetImage(piece);
                 }

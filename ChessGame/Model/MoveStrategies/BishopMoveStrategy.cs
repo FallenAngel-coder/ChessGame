@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 
 namespace ChessGame.Model.MoveStrategies
 {
-    public class BishopMoveStrategy : IMoveStrategy
+    public class BishopMoveStrategy : MoveStrategyBase<Bishop>
     {
         private static readonly Direction[] dirs =
-        {
+            {
             Direction.NorthEast,
             Direction.NorthWest,
             Direction.SouthEast,
             Direction.SouthWest
         };
 
-        public IEnumerable<Move> GetMoves(Position from, IBoard board, Piece piece)
+        protected override IEnumerable<Move> GetMoves(Position from, IBoard board, Bishop piece)
         {
             return MoveHelper.Ray(from, board, dirs, piece.Color)
                 .Select(to => new NormalMove(from, to));

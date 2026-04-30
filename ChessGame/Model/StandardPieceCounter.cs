@@ -15,7 +15,7 @@ namespace ChessGame.Model
 
             foreach (Position pos in board.PiecePositions())
             {
-                Piece piece = board[pos];
+                IPiece piece = board[pos];
                 counter.Increment(piece.Color, piece.Type);
             }
 

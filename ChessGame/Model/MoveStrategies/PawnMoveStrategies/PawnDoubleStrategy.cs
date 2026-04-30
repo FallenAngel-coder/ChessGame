@@ -1,5 +1,4 @@
-﻿using ChessGame.Model.Attributes;
-using ChessGame.Model.Moves;
+﻿using ChessGame.Model.Moves;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,16 +7,14 @@ using System.Threading.Tasks;
 
 namespace ChessGame.Model.MoveStrategies
 {
-    [PawnMoveStrategies]
-    public class PawnDoubleStrategy : IMoveStrategy
+    public class PawnDoubleStrategy : MoveStrategyBase<Pawn>
     {
-        public IEnumerable<Move> GetMoves(Position from, IBoard board, Piece piece)
+        protected override IEnumerable<Move> GetMoves(Position from, IBoard board, Pawn pawn)
         {
-            var pawn = piece as Pawn;
-            if (pawn == null)
-                yield break;
+            var player = pawn.Color;
+            var forward = player.Forward(); 
 
-            Position twoStep = from + pawn.Forward + pawn.Forward;
+            Position twoStep = from + forward + forward;
 
             if (!board.IsInside(twoStep) || !board.IsEmpty(twoStep))
                 yield break;

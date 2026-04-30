@@ -8,18 +8,14 @@ namespace ChessGame
         public override PieceType Type => PieceType.Rook;
         public override Player Color { get; }
 
-        public Rook(Player player, IMoveStrategy moveStrategy)
-            : base(moveStrategy)
+        public Rook(Player player)
         {
             Color = player;
         }
 
-        public override Piece Copy()
+        public override IPiece Copy()
         {
-            return new Rook(Color, MoveStrategy)
-            {
-                HasMoved = this.HasMoved
-            };
+            return new Rook(Color) { HasMoved = this.HasMoved };
         }
     }
 }

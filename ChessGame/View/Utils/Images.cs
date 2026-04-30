@@ -39,7 +39,7 @@ namespace ChessGame.Model
                 _ => null
             };
         }
-        public static ImageSource GetImage(Piece piece)
+        public static ImageSource GetImage(IPiece piece)
         {
             if (piece == null)
             {

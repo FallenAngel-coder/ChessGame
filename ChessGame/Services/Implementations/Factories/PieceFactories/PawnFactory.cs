@@ -1,4 +1,5 @@
 ﻿using ChessGame.Model.Abstractions;
+using ChessGame.Model.Attributes;
 using ChessGame.Model.MoveStrategies;
 using ChessGame.Services.Interfaces.Utils.PieceFactories;
 using System;
@@ -11,19 +12,16 @@ namespace ChessGame.Services.Implementations.Utils.PieceFactories
 {
     public class PawnFactory : ISubPieceFactory
     {
+        private readonly CompositeMoveStrategy _moveStrategy;
+
         public PieceType Type => PieceType.Pawn;
 
-        public Piece Create(Player color)
+        public PawnFactory(IEnumerable<IMoveStrategy> pawnStrategies)
         {
-            var pawnStrategies = new List<IMoveStrategy>
-            {
-                new PawnForwardStrategy(),
-                new PawnCaptureStrategy(),
-                new PawnDoubleStrategy(),
-                new PawnEnPassantStrategy()
-            };
-
-            return new Pawn(color, new CompositeMoveStrategy(pawnStrategies));
+            _moveStrategy = new CompositeMoveStrategy(pawnStrategies);
         }
+
+        public Piece Create(Player color)
+            => new Pawn(color, _moveStrategy);
     }
 }

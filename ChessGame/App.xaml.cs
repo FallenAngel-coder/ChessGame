@@ -1,25 +1,8 @@
-﻿using ChessGame.Model;
-using ChessGame.Model.Abstractions;
-using ChessGame.Model.Data;
-using ChessGame.Model.Moves;
-using ChessGame.Model.MoveStrategies;
-using ChessGame.Model.Rules;
+﻿using ChessGame.Extensions;
+using ChessGame.Model;
 using ChessGame.Services;
-using ChessGame.Services.Abstractions;
-using ChessGame.Services.DTO.Handlers;
-using ChessGame.Services.DTO.Messages;
-using ChessGame.Services.Implementations;
-using ChessGame.Services.Implementations.Factories;
-using ChessGame.Services.Implementations.Game;
-using ChessGame.Services.Implementations.Network;
-using ChessGame.Services.Implementations.Utils;
-using ChessGame.Services.Implementations.Utils.PieceFactories;
 using ChessGame.Services.Interfaces;
-using ChessGame.Services.Interfaces.Factories;
-using ChessGame.Services.Interfaces.Utils;
-using ChessGame.Services.Interfaces.Utils.PieceFactories;
 using ChessGame.ViewModel;
-using ChessGame.ViewModel.Game;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 
@@ -33,67 +16,12 @@ namespace ChessGame
         {
             var services = new ServiceCollection();
 
-            services.AddSingleton<INavigationService, NavigationService>();
-            services.AddSingleton<INetworkService, TcpNetworkService>();
-            services.AddSingleton<ISettingsService, SettingsService>();
-
-            services.AddSingleton<IDtoResolver, DtoResolver>();
-            services.AddSingleton<IMessageDispatcher, MessageDispatcher>();
-
-            services.AddSingleton<IBoardFactory, BoardFactory>();
-            services.AddSingleton<IGameStateFactory, GameStateFactory>();
-
-            services.AddSingleton<IMoveFactory, MoveFactory>();
-            services.AddSingleton<IPieceFactory, PieceFactory>();
-
-            services.AddTransient<ISubPieceFactory, PawnFactory>();
-            services.AddTransient<ISubPieceFactory, RookFactory>();
-            services.AddTransient<ISubPieceFactory, KnightFactory>();
-            services.AddTransient<ISubPieceFactory, BishopFactory>();
-            services.AddTransient<ISubPieceFactory, QueenFactory>();
-            services.AddTransient<ISubPieceFactory, KingFactory>();
-
-            services.AddSingleton<IViewModelFactory<LobbyParams>, LobbyViewModelFactory>();
-            services.AddSingleton<IViewModelFactory<GameResult>, EndResultViewModelFactory>();
-
-            services.AddSingleton<IEndGameRulePipeline, EndGameRulePipeline>();
-
-            services.AddTransient<IEndGameRule, CheckmateRule>();
-            services.AddTransient<IEndGameRule, StalemateRule>();
-            services.AddTransient<IEndGameRule, RepetitionRule>();
-            services.AddTransient<IEndGameRule, InsufficientMaterial>();
-
-            services.AddSingleton<ILobbyService, LobbyService>();
-            services.AddSingleton<IGameService, GameService>();
-            services.AddSingleton<IChessRulesService, ChessRulesService>();
-            services.AddSingleton<IGameHistoryService, GameHistoryService>();
-
-            services.AddTransient<IMessageHandler<DtoStartGame>, StartGameHandler>();
-            services.AddTransient<IMessageHandler<DtoNormalMove>, NormalMoveHandler>();
-            services.AddTransient<IMessageHandler<DtoDoubleMove>, DoubleMoveHandler>();
-            services.AddTransient<IMessageHandler<DtoEnPassantMove>, DtoEnPassantMoveHandler>();
-            services.AddTransient<IMessageHandler<DtoPromotionMove>, PromotionMoveHandler>();
-
-            services.AddTransient<ISpecificDtoMoveFactory, DtoNormalMoveFactory>();
-            services.AddTransient<ISpecificDtoMoveFactory, DtoPromotionMoveFactory>();
-            services.AddTransient<ISpecificDtoMoveFactory, DtoDoubleMoveFactory>();
-            services.AddTransient<ISpecificDtoMoveFactory, DtoEnPasssantMoveFactory>();
-            services.AddTransient<IDtoMoveFactory, DtoMoveDispatcher>();
-
-            services.AddTransient<MainViewModel>();
-            services.AddTransient<MenuViewModel>();
-            services.AddTransient<EndResultViewModel>();
-            services.AddTransient<SearchGameViewModel>();
-            services.AddTransient<LobbyViewModel>();
-            services.AddTransient<SettingsViewModel>();
-            services.AddTransient<GameViewModel>();
-
-            //services.AddTransient<IMoveStrategy, BishopMoveStrategy>();
-            //services.AddTransient<IMoveStrategy, CompositeMoveStrategy>();
-            //services.AddTransient<IMoveStrategy, KnightMoveStrategy>();
-            //services.AddTransient<IMoveStrategy, PawnForwardStrategy>();
-            //services.AddTransient<IMoveStrategy, PawnCaptureStrategy>();
-            //services.AddTransient<IMoveStrategy, QueenMoveStrategy>();
+            services.AddAppServices();
+            services.AddFactories();
+            services.AddMoveStrategies();
+            services.AddGameRules();
+            services.AddMessageHandlers();
+            services.AddViewModels();
 
             ServiceProvider = services.BuildServiceProvider();
         }

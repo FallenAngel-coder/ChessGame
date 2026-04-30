@@ -10,9 +10,15 @@ namespace ChessGame.Services.Implementations.Utils.PieceFactories
 {
     public class BishopFactory : ISubPieceFactory
     {
+        private readonly IMoveStrategy _moveStrategy;
+
         public PieceType Type => PieceType.Bishop;
 
+        public BishopFactory(IMoveStrategy moveStrategy) 
+        {
+            _moveStrategy = moveStrategy;
+        }
         public Piece Create(Player color)
-            => new Bishop(color, new BishopMoveStrategy());
+            => new Bishop(color, _moveStrategy);
     }
 }

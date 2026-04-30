@@ -10,9 +10,13 @@ namespace ChessGame.Services.Implementations.Utils.PieceFactories
 {
     public class RookFactory : ISubPieceFactory
     {
+        private readonly IMoveStrategy _moveStrategy;
         public PieceType Type => PieceType.Rook;
-
+        public RookFactory(IMoveStrategy moveStrategy)
+        {
+            _moveStrategy = moveStrategy;
+        }
         public Piece Create(Player color)
-            => new Rook(color, new RookMoveStrategy());
+            => new Rook(color, _moveStrategy);
     }
 }

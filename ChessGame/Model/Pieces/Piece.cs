@@ -5,12 +5,11 @@ namespace ChessGame
 {
     public abstract class Piece
     {
-        private readonly IMoveStrategy _moveStrategy;
-        protected IMoveStrategy MoveStrategy => _moveStrategy;
+        protected IMoveStrategy MoveStrategy { get; }
 
-        protected Piece(IMoveStrategy strategy)
+        protected Piece(IMoveStrategy moveStrategy)
         {
-            _moveStrategy = strategy;
+            MoveStrategy = moveStrategy;
         }
 
         public abstract PieceType Type { get; }
@@ -18,7 +17,7 @@ namespace ChessGame
         public bool HasMoved { get; set; }
 
         public IEnumerable<Move> GetMoves(Position from, IBoard board)
-            => _moveStrategy.GetMoves(from, board, this);
+            => MoveStrategy.GetMoves(from, board, this);
 
         public abstract Piece Copy();
     }

@@ -10,10 +10,13 @@ namespace ChessGame.Services.Implementations.Utils.PieceFactories
 {
     public class KingFactory : ISubPieceFactory
     {
-
+        private readonly IMoveStrategy _moveStrategy;
         public PieceType Type => PieceType.King;
-
+        public KingFactory(IMoveStrategy moveStrategy)
+        {
+            _moveStrategy = moveStrategy;
+        }
         public Piece Create(Player color)
-            => new King(color, new KingMoveStrategy());
+            => new King(color, _moveStrategy);
     }
 }

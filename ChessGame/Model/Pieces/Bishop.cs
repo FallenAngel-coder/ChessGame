@@ -6,19 +6,18 @@ namespace ChessGame
 {
     public class Bishop : Piece
     {
-        private readonly IMoveStrategy _moveStrategy;
         public override PieceType Type => PieceType.Bishop;
         public override Player Color { get; }
 
-        public Bishop(Player player, IMoveStrategy moveStrategy) : base(moveStrategy)
+        public Bishop(Player player, IMoveStrategy moveStrategy)
+            : base(moveStrategy)
         {
             Color = player;
-            _moveStrategy = moveStrategy;
         }
 
         public override Piece Copy()
         {
-            return new Bishop(Color, _moveStrategy)
+            return new Bishop(Color, MoveStrategy)
             {
                 HasMoved = this.HasMoved
             };

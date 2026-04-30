@@ -1,4 +1,5 @@
-﻿using ChessGame.Model.Moves;
+﻿using ChessGame.Model.Attributes;
+using ChessGame.Model.Moves;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace ChessGame.Model.MoveStrategies
 {
+    [PawnMoveStrategies]
     public class PawnForwardStrategy : IMoveStrategy
     {
         public IEnumerable<Move> GetMoves(Position from, IBoard board, Piece piece)

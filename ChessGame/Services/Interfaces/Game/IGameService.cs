@@ -5,6 +5,7 @@ namespace ChessGame.Services.Interfaces
     public interface IGameService
     {
         Player ThisPlayer { get; }
+        Player CurrentPlayer { get; }
 
         event Action BoardChanged;
         event Action PlayerChanged;

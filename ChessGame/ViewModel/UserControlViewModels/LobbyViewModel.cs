@@ -1,4 +1,5 @@
 ﻿using ChessGame.Commands;
+using ChessGame.Model.Data;
 using ChessGame.Services.Implementations;
 using ChessGame.Services.Interfaces;
 using System.Windows.Input;
@@ -60,11 +61,11 @@ namespace ChessGame.ViewModel
                 ? (IsOtherPlayerConnected ? "Суперник приєднався" : "Очікування суперника")
                 : "Очікування початку гри";
         }
-        public async Task ConfigureAsync(bool isHost, string ip = null)
+        public async Task ConfigureAsync(LobbyParams lobbyParams)
         {
-            IsHost = isHost;
+            IsHost = lobbyParams.IsHost;
 
-            await _lobbyService.InitializeAsync(isHost, ip);
+            await _lobbyService.InitializeAsync(lobbyParams.IsHost, lobbyParams.IpAdress);
         }
 
         private async Task StartGameAsync()

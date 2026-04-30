@@ -16,6 +16,8 @@ namespace ChessGame.Model
 
         public CountingPieces()
         {
+            TotalCount = 0;
+
             foreach (PieceType type in Enum.GetValues(typeof(PieceType)))
             {
                 whiteCount[type] = 0;
@@ -32,6 +34,8 @@ namespace ChessGame.Model
             { 
                 blackCount[type]++; 
             }
+
+            TotalCount++;
         }
         public int GetBlackPieces(PieceType type)
         {

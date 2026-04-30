@@ -11,6 +11,6 @@ namespace ChessGame.Services
     public interface IMoveFactory
     {
         Move CreateNormalMove(Position from, Position to);
-        IEnumerable<Move> CreatePromotionMoves(Position from, Position to, IEnumerable<IPromotionStrategy> strategies);
+        IEnumerable<Move> CreatePromotionMoves(Position from, Position to, IEnumerable<PieceType> promotionTypes);
     }
 }

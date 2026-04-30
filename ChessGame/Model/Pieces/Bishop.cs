@@ -1,36 +1,27 @@
 ﻿using ChessGame.Model;
 using ChessGame.Model.Moves;
+using ChessGame.Model.MoveStrategies;
 
 namespace ChessGame
 {
     public class Bishop : Piece
     {
+        private readonly IMoveStrategy _moveStrategy;
         public override PieceType Type => PieceType.Bishop;
         public override Player Color { get; }
 
-        private static readonly Direction[] dirs = new Direction[]
-        {
-            Direction.NorthEast,
-            Direction.NorthWest,
-            Direction.SouthEast,
-            Direction.SouthWest,
-        };
-
-        public Bishop(Player player)
+        public Bishop(Player player, IMoveStrategy moveStrategy) : base(moveStrategy)
         {
             Color = player;
+            _moveStrategy = moveStrategy;
         }
 
         public override Piece Copy()
         {
-            Piece copy = new Bishop(Color);
-            copy.HasMoved = this.HasMoved;
-            return copy;
-        }
-
-        public override IEnumerable<Move> GetMoves(Position from, IBoard board)
-        {
-            return MovePositionInDirs(from, board, dirs).Select(to => new NormalMove(from, to));
+            return new Bishop(Color, _moveStrategy)
+            {
+                HasMoved = this.HasMoved
+            };
         }
     }
 }

@@ -11,9 +11,5 @@ namespace ChessGame.Model.PromotionStrategies
     public class PromoteToQueenStrategy : IPromotionStrategy
     {
         public PieceType PieceType => PieceType.Queen;
-        public Piece CreatePiece(Player color)
-        {
-            return new Queen(color);
-        }
     }
 }

@@ -32,7 +32,7 @@ namespace ChessGame.ViewModel.Game
             {
                 var finalMove = _availableMoves
                     .OfType<PawnPromotion>()
-                    .FirstOrDefault(m => m.PromotionStrategy.PieceType == selectedType);
+                    .FirstOrDefault(m => m.PromotionPieceType == selectedType);
 
                 if (finalMove != null)
                 {
@@ -47,7 +47,7 @@ namespace ChessGame.ViewModel.Game
 
             var availableTypes = _availableMoves
                 .OfType<PawnPromotion>()
-                .Select(m => m.PromotionStrategy.PieceType);
+                .Select(m => m.PromotionPieceType);
 
             foreach (var type in availableTypes)
             {
@@ -58,5 +58,7 @@ namespace ChessGame.ViewModel.Game
                 });
             }
         }
+
+
     }
 }

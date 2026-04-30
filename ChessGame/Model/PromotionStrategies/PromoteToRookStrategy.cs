@@ -11,9 +11,5 @@ namespace ChessGame.Model.PromotionStrategies
     public class PromoteToRookStrategy : IPromotionStrategy
     {
         public PieceType PieceType => PieceType.Rook;
-        public Piece CreatePiece(Player color)
-        {
-            return new Rook(color);
-        }
     }
 }

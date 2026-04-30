@@ -15,6 +15,7 @@ namespace ChessGame.Services
         private readonly IEndGameRulePipeline _endGamePipeline;
 
         public Player ThisPlayer => _state.ThisPlayer;
+        public Player CurrentPlayer => _state.CurrentPlayer;
 
         public event Action BoardChanged;
         public event Action PlayerChanged;
@@ -55,6 +56,7 @@ namespace ChessGame.Services
                 return false;
             }
 
+            _state.Board.SetPawnSkipPosition(CurrentPlayer, null);
             move.Execute(_state.Board);
             MoveExecuted?.Invoke(move);
 

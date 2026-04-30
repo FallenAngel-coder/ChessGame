@@ -12,9 +12,5 @@ namespace ChessGame.Model.PromotionStrategies
     public class PromoteToBishopStrategy : IPromotionStrategy
     {
         public PieceType PieceType => PieceType.Bishop;
-        public Piece CreatePiece(Player color)
-        {
-            return new Bishop(color);
-        }
     }
 }

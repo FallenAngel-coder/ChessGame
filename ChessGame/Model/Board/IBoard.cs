@@ -9,6 +9,8 @@ namespace ChessGame.Model
 
         bool IsEmpty(Position pos);
         bool IsInside(Position pos);
+        Position GetPawnSkipPosition(Player player);
+        void SetPawnSkipPosition(Player player, Position pos);
         IEnumerable<Position> PiecePositions();
         IEnumerable<Position> PiecePositionsFor(Player player);
         Position FindKing(Player player);

@@ -1,5 +1,5 @@
 ﻿using ChessGame.Model;
-using ChessGame.Model.Moves;
+using ChessGame.Model.MoveStrategies;
 
 namespace ChessGame
 {
@@ -8,27 +8,18 @@ namespace ChessGame
         public override PieceType Type => PieceType.Rook;
         public override Player Color { get; }
 
-        private static readonly Direction[] dirs = new Direction[]
-        {
-            Direction.North,
-            Direction.South,
-            Direction.West,
-            Direction.East,
-        };
-        public Rook(Player player)
+        public Rook(Player player, IMoveStrategy moveStrategy)
+            : base(moveStrategy)
         {
             Color = player;
         }
 
         public override Piece Copy()
         {
-            Piece copy = new Rook(Color);
-            copy.HasMoved = this.HasMoved;
-            return copy;
-        }
-        public override IEnumerable<Move> GetMoves(Position from, IBoard board)
-        {
-            return MovePositionInDirs(from, board, dirs).Select(to => new NormalMove(from, to));
+            return new Rook(Color, MoveStrategy)
+            {
+                HasMoved = this.HasMoved
+            };
         }
     }
 }

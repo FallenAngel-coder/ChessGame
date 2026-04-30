@@ -18,26 +18,31 @@ namespace ChessGame.Services.Implementations.Network
         {
             _gameService = gameService;
         }
+
         public DtoType TargetDtoType => DtoType.PromotionMove;
         public MoveType TargetMoveType => MoveType.PawnPromotion;
 
         public Move GetMoveFromDTO(IDtoMessage message)
         {
             var dto = (DtoPromotionMove)message;
+
             var legalMoves = _gameService.GetLegalMoves(dto.FromPos);
 
-            var localMove = legalMoves
+            return legalMoves
                 .OfType<PawnPromotion>()
-                .FirstOrDefault(m => m.ToPos == dto.ToPos &&
-                                     m.PromotionStrategy.PieceType == dto.PromotionPieceType);
-
-            return localMove;
+                .FirstOrDefault(m =>
+                    m.ToPos == dto.ToPos &&
+                    m.PromotionPieceType == dto.PromotionPieceType);
         }
 
         public IDtoMessage GetMoveToDTO(Move move)
         {
             var promotion = (PawnPromotion)move;
-            return new DtoPromotionMove(promotion.FromPos, promotion.ToPos, promotion.PromotionStrategy.PieceType);
+
+            return new DtoPromotionMove(
+                promotion.FromPos,
+                promotion.ToPos,
+                promotion.PromotionPieceType);
         }
     }
 }

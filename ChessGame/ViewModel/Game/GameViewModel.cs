@@ -3,6 +3,7 @@ using ChessGame.Model;
 using ChessGame.Model.Moves;
 using ChessGame.Services.Implementations;
 using ChessGame.Services.Interfaces;
+using ChessGame.Services.Interfaces.Factories;
 using ChessGame.ViewModel.Game;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -21,7 +22,14 @@ namespace ChessGame.ViewModel
 {
     public class GameViewModel : BaseViewModel, IDisposable
     {
-        protected readonly Dictionary<Position, List<Move>> moveCache = new Dictionary<Position, List<Move>>();
+        private readonly IGameService _gameService;
+        private readonly INetworkService _networkService;
+        private readonly INavigationService _navigationService;
+        private readonly IDtoMoveFactory _dtoMoveFactory;
+        private readonly IViewModelFactory<GameResult> _gameResultFactory;
+
+
+        private readonly MoveCache _moveCache = new();
         public CellsViewModel CellsViewModel { get; set; }
         public HighlightsViewModel HighlightsViewModel { get; set; }
         private Position SelectedPos { get; set; }
@@ -41,23 +49,29 @@ namespace ChessGame.ViewModel
             get => _promotionViewModel;
             set { _promotionViewModel = value; NotifyPropertyChanged(); }
         }
-        private readonly IGameService _gameService;
-        private readonly INetworkService _networkService;
-        private readonly INavigationService _navigationService;
-        private readonly IDtoMoveFactory _dtoMoveFactory;
 
+        private string _turnStatus;
+        public string TurnStatus
+        {
+            get => _turnStatus;
+            set { _turnStatus = value; NotifyPropertyChanged(); }
+        }
+
+        public ICommand LeaveGameCommand { get; }
         public ICommand CellClickCommand { get; }
         public GameViewModel(IGameService gameService, INetworkService networkService, 
-            INavigationService navigationService, IDtoMoveFactory dtoMoveFactory)
+            INavigationService navigationService, IDtoMoveFactory dtoMoveFactory, IViewModelFactory<GameResult> gameResultFactory)
         {
             _gameService = gameService;
             _networkService = networkService;
             _navigationService = navigationService;
             _dtoMoveFactory = dtoMoveFactory;
+            _gameResultFactory = gameResultFactory;
 
             InitializeBoard();
 
             CellClickCommand = new RelayCommand(OnCellClick);
+            LeaveGameCommand = new RelayCommand(OnLeaveGame);
 
             _gameService.BoardChanged += OnBoardUpdated;
             _gameService.MoveExecuted += OnMoveExecuted;
@@ -69,11 +83,7 @@ namespace ChessGame.ViewModel
 
         private void OnGameOver(GameResult result)
         {
-            var app = (App)Application.Current;
-            var serviceProvider = app.ServiceProvider;
-            var endGameVM = serviceProvider.GetRequiredService<EndResultViewModel>();
-
-            endGameVM.Initialize(result);
+            var endGameVM = _gameResultFactory.CreateViewModelWithParams(result);
 
             _navigationService.NavigateTo(endGameVM);
         }
@@ -101,6 +111,7 @@ namespace ChessGame.ViewModel
                 HighlightsViewModel.ShowCheck(
                     _gameService.GetKingInCheck()
                 );
+                UpdateTurnStatus();
             });
         }
 
@@ -119,17 +130,7 @@ namespace ChessGame.ViewModel
         }
         private void CacheMoves(IEnumerable<Move> moves)
         {
-            moveCache.Clear();
-
-            foreach (Move move in moves)
-            {
-                if (!moveCache.ContainsKey(move.ToPos))
-                {
-                    moveCache[move.ToPos] = new List<Move>();
-                }
-
-                moveCache[move.ToPos].Add(move);
-            }
+            _moveCache.CacheMoves(moves);
         }
         private void OnCellClick(object obj)
         {
@@ -156,32 +157,30 @@ namespace ChessGame.ViewModel
         private void OnFromPositionSelected(Position pos)
         {
             var moves = _gameService.GetLegalMoves(pos);
-            if (!moves.Any())
-                return;
+            if (!moves.Any()) return;
 
             SelectedPos = pos;
             CacheMoves(moves);
-            HighlightsViewModel.ShowHighlights(moveCache.Keys);
+            HighlightsViewModel.ShowHighlights(_moveCache.GetDestinations());
         }
         private void OnToPositionSelected(Position pos)
         {
             SelectedPos = null;
             HighlightsViewModel.HideHighlights();
-            
-            if (moveCache.TryGetValue(pos, out List<Move> movesToPos))
+
+            if (_moveCache.HasMovesForTarget(pos))
             {
+                var movesToPos = _moveCache.GetMovesForTarget(pos);
                 if (!movesToPos.Any()) return;
 
                 if (movesToPos.Any(m => m is PawnPromotion))
                 {
                     var promotionVM = new PawnPromotionViewModel(movesToPos, _gameService.ThisPlayer);
-
                     promotionVM.PromotionSelected += (finalMove) =>
                     {
                         _gameService.TryMakeMove(finalMove);
                         PromotionViewModel = null;
                     };
-
                     PromotionViewModel = promotionVM;
                 }
                 else
@@ -190,7 +189,18 @@ namespace ChessGame.ViewModel
                 }
             }
         }
+        private void OnLeaveGame(object obj)
+        {
+            //_networkService.SendAsync("Resign", new { Player = _gameService.ThisPlayer });
 
+            _navigationService.NavigateTo<MenuViewModel>();
+        }
+
+        private void UpdateTurnStatus()
+        {
+            var currentPlayer = _gameService.CurrentPlayer;
+            TurnStatus = (currentPlayer == Player.White) ? "Хід Білих" : "Хід Чорних";
+        }
         public void Dispose()
         {
             _gameService.BoardChanged -= OnBoardUpdated;

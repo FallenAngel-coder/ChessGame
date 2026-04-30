@@ -10,17 +10,17 @@ namespace ChessGame.Services.Implementations.Utils.PieceFactories
 {
     public class PieceFactory : IPieceFactory
     {
-        private readonly IEnumerable<ISubPieceFactory> _subFactories;
+        private readonly Dictionary<PieceType, ISubPieceFactory> _map;
 
         public PieceFactory(IEnumerable<ISubPieceFactory> subFactories)
         {
-            _subFactories = subFactories;
+            _map = subFactories.ToDictionary(x => x.Type);
         }
 
         public Piece CreatePiece(PieceType type, Player color)
         {
-            var factory = _subFactories.First(f => f.Type == type);
-
+            if (!_map.TryGetValue(type, out var factory))
+                throw new InvalidOperationException($"Missing factory for {type}");
 
             return factory.Create(color);
         }

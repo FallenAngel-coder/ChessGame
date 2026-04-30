@@ -1,5 +1,4 @@
 ﻿using ChessGame.Model.Abstractions;
-using ChessGame.Model.Abstractions;
 using ChessGame.Services;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +8,13 @@ namespace ChessGame.Model
 {
     public class Board : IBoard
     {
-        private readonly Piece[,] pieces = new Piece[8, 8];
+        public const int Size = 8;
+        private readonly Piece[,] pieces = new Piece[Size, Size];
+        private readonly Dictionary<Player, Position> pawnSkipPositions = new Dictionary<Player, Position>
+        {
+            [Player.White] = null,
+            [Player.Black] = null,
+        };
         private readonly IPieceCounterStrategy _pieceCounter;
 
         public Board(IPieceCounterStrategy pieceCounter = null)
@@ -27,10 +32,18 @@ namespace ChessGame.Model
             get { return pieces[pos.Row, pos.Column]; }
             set { pieces[pos.Row, pos.Column] = value; }
         }
+        public Position GetPawnSkipPosition(Player player)
+        {
+            return pawnSkipPositions[player];
+        }
 
+        public void SetPawnSkipPosition(Player player, Position pos)
+        {
+            pawnSkipPositions[player] = pos;
+        }
         public bool IsInside(Position pos)
         {
-            return pos.Row >= 0 && pos.Row < 8 && pos.Column >= 0 && pos.Column < 8;
+            return pos.Row >= 0 && pos.Row < Size && pos.Column >= 0 && pos.Column < Size;
         }
 
         public bool IsEmpty(Position pos)
@@ -40,9 +53,9 @@ namespace ChessGame.Model
 
         public IEnumerable<Position> PiecePositions()
         {
-            for (int r = 0; r < 8; r++)
+            for (int r = 0; r < Size; r++)
             {
-                for (int c = 0; c < 8; c++)
+                for (int c = 0; c < Size; c++)
                 {
                     Position pos = new Position(r, c);
                     if (!IsEmpty(pos))
@@ -67,7 +80,7 @@ namespace ChessGame.Model
         public IBoard Copy()
         {
             Board copy = new Board(_pieceCounter);
-            for (int r = 0; r < 8; r++)
+            for (int r = 0; r < Size; r++)
             {
                 for (int c = 0; c < 8; c++)
                 {
@@ -83,9 +96,9 @@ namespace ChessGame.Model
         public string GeneratePositionHash()
         {
             var sb = new StringBuilder();
-            for (int r = 0; r < 8; r++)
+            for (int r = 0; r < Size; r++)
             {
-                for (int c = 0; c < 8; c++)
+                for (int c = 0; c < Size; c++)
                 {
                     Piece p = pieces[r, c];
                     if (p == null)

@@ -8,6 +8,16 @@ namespace ChessGame.Services
 {
     public class ChessRulesService : IChessRulesService
     {
+        private readonly IMoveFactory _moveFactory;
+        private static readonly PieceType[] _promotionTypes = new[]
+            {
+            PieceType.Queen, PieceType.Rook, PieceType.Bishop, PieceType.Knight
+        };
+
+        public ChessRulesService(IMoveFactory moveFactory)
+        {
+            _moveFactory = moveFactory;
+        }
         public IEnumerable<Move> GetLegalMoves(IBoard board, Player player, Position pos)
         {
             if (board.IsEmpty(pos)) return Enumerable.Empty<Move>();
@@ -16,7 +26,27 @@ namespace ChessGame.Services
             if (piece.Color != player) return Enumerable.Empty<Move>();
 
             var candidates = piece.GetMoves(pos, board);
-            return candidates.Where(m => IsMoveLegal(board, m));
+            var legalMoves = new List<Move>();
+
+            foreach (var move in candidates)
+            {
+                if (piece.Type == PieceType.Pawn && IsLastRank(move.ToPos, piece.Color))
+                {
+                    var promotionMoves = _moveFactory.CreatePromotionMoves(
+                        move.FromPos, move.ToPos, _promotionTypes);
+                    legalMoves.AddRange(promotionMoves);
+                }
+                else
+                {
+                    legalMoves.Add(move);
+                }
+            }
+
+            return legalMoves.Where(m => IsMoveLegal(board, m));
+        }
+        private bool IsLastRank(Position pos, Player color)
+        {
+            return color == Player.White ? pos.Row == 0 : pos.Row == 7;
         }
         public bool HasAnyLegalMoves(IBoard board, Player player)
         {

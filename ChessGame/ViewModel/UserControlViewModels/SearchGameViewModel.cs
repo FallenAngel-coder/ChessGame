@@ -1,6 +1,8 @@
 ﻿using ChessGame.Commands;
 using ChessGame.Model;
+using ChessGame.Model.Data;
 using ChessGame.Services.Interfaces;
+using ChessGame.Services.Interfaces.Factories;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 using System.Windows.Input;
@@ -10,6 +12,7 @@ namespace ChessGame.ViewModel
     public class SearchGameViewModel : BaseViewModel
     {
         private readonly INavigationService _navigation;
+        private readonly IViewModelFactory<LobbyParams> _lobbyFactory;
         private string _ipAddress = "127.0.0.1";
 
         public string IpAddress
@@ -25,9 +28,11 @@ namespace ChessGame.ViewModel
         public ICommand JoinCommand { get; }
         public ICommand MenuCommand { get; }
 
-        public SearchGameViewModel(INavigationService navigation)
+        public SearchGameViewModel(INavigationService navigation,
+            IViewModelFactory<LobbyParams> lobbyFactory)
         {
             _navigation = navigation;
+            _lobbyFactory = lobbyFactory;
 
             JoinCommand = new RelayCommand(JoinGame);
             MenuCommand = new RelayCommand(ReturnToMenu);
@@ -41,11 +46,9 @@ namespace ChessGame.ViewModel
                 return;
             }
 
-            var sp = ((App)Application.Current).ServiceProvider;
+            var param = new LobbyParams(isHost: false, IpAddress);
 
-            var lobbyVM = sp.GetRequiredService<LobbyViewModel>();
-
-            lobbyVM.ConfigureAsync(isHost: false, IpAddress);
+            var lobbyVM = _lobbyFactory.CreateViewModelWithParams(param);
 
             _navigation.NavigateTo(lobbyVM);
         }

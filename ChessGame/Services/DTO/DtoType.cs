@@ -10,8 +10,11 @@ namespace ChessGame.Services
     {
         None,
         NormalMove,
+        DoubleMove,
         PromotionMove,
+        EnPassant,
         EndGame,
         StartGame
+
     }
 }

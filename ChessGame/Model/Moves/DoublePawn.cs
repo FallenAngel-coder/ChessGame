@@ -25,6 +25,8 @@ namespace ChessGame.Model.Moves
         {
             Player player = board[FromPos].Color;
             board.SetPawnSkipPosition(player, _skippedPos);
+
+            new NormalMove(FromPos, ToPos).Execute(board);
         }
     }
 }

@@ -70,10 +70,14 @@ namespace ChessGame
 
             services.AddTransient<IMessageHandler<DtoStartGame>, StartGameHandler>();
             services.AddTransient<IMessageHandler<DtoNormalMove>, NormalMoveHandler>();
+            services.AddTransient<IMessageHandler<DtoDoubleMove>, DoubleMoveHandler>();
+            services.AddTransient<IMessageHandler<DtoEnPassantMove>, DtoEnPassantMoveHandler>();
             services.AddTransient<IMessageHandler<DtoPromotionMove>, PromotionMoveHandler>();
 
             services.AddTransient<ISpecificDtoMoveFactory, DtoNormalMoveFactory>();
             services.AddTransient<ISpecificDtoMoveFactory, DtoPromotionMoveFactory>();
+            services.AddTransient<ISpecificDtoMoveFactory, DtoDoubleMoveFactory>();
+            services.AddTransient<ISpecificDtoMoveFactory, DtoEnPasssantMoveFactory>();
             services.AddTransient<IDtoMoveFactory, DtoMoveDispatcher>();
 
             services.AddTransient<MainViewModel>();

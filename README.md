@@ -152,4 +152,186 @@ High-level modules depend on abstractions, not concrete implementations:
 - [GameStateMemento.cs](ChessLibrary/Game/GameStateMemento.cs)
 - [GameState.cs](ChessLibrary/Game/GameState.cs)
 - [GameHistoryService.cs](ChessApplication/Services/Game/GameHistoryService.cs)
+
+---
+
+## Refactoring Techniques
+
+### **1. Extract Service**
+**Purpose:** Extract business logic into dedicated services
+- Networking abstraction into `INetworkService`
+- Settings management into `ISettingsService`
+- Navigation logic into `INavigationService`
+
+**Benefits:**
+- Single Responsibility Principle
+- Easier to mock in tests
+- Reusable across application
+
+**Reference:** 
+- [INetworkService.cs](ChessApplication/Interfaces/Network/INetworkService.cs)
+- [ISettingsService.cs](ChessApplication/Interfaces/Utils/ISettingsService.cs)
+- [INavigationService.cs](ChessGame/Utils/INavigationService.cs)
+
+### **2. Replace Magic Numbers with Constants**
+**Purpose:** Use meaningful names instead of cryptic numbers
+- `Board.Size = 8` instead of hardcoded 8's throughout
+- `Direction` instead of magic coordinate offsets
+- Named constants in movement calculations
+
+**Example:**
+```csharp
+// Before
+if (pos.Row >= 0 && pos.Row < 8 && pos.Column >= 0 && pos.Column < 8)
+
+// After
+public const int Size = 8;
+public bool IsInside(Position pos)
+{
+    return pos.Row >= 0 && pos.Row < Size && pos.Column >= 0 && pos.Column < Size;
+}
+```
+
+**Reference:** 
+- [Board.cs](ChessLibrary/Board/Board.cs#L10)
+- [Direction.cs](ChessLibrary/ValueObjects/Direction.cs)
+
+### **3. Replace Conditional with Polymorphism**
+**Purpose:** Replace type-checking conditionals with polymorphic behavior
+- `IEndGameRule` implementations replace branching end-game logic
+- `ISubPieceFactory` implementations replace branching of piece creation
+
+**Example:**
+```csharp
+// Before
+public GameResult? CheckEndGame(IBoard board, Player player)
+{
+    if (IsCheckmate(board, player))
+        return GameResult.Checkmate;
+
+    if (IsStalemate(board, player))
+        return GameResult.Stalemate;
+
+    return null;
+}
+
+// After
+public interface IEndGameRule
+{
+    GameResult? Check(IBoard board, Player player);
+}
+
+// usage
+foreach (var rule in _rules)
+{
+    var result = rule.Check(board, player);
+    if (result != null)
+        return result;
+}
+```
+
+**Reference:** 
+- [IEndGameRule.cs](ChessLibrary/Rules/IEndGameRule.cs)
+- [ISubPieceFactory.cs](ChessLibrary/Factories/PieceFactories/ISubPieceFactory.cs)
+
+### **4. Replace Type Code with State/Strategy**
+**Purpose:** Replace type flags / enums controlling behavior with dedicated classes
+- `INetworkState` replaces branching logic based on connection status
+- Each state encapsulates its own behavior (`ConnectedState`, `DisconnectedState`, etc.)
+- Eliminates `if (state == ...)` / `switch(state)` logic
+
+**Benefits:**
+- Open/Closed Principle (easy to add new states)
+- Removes conditional complexity
+- Makes runtime behavior explicit and extensible
+
+**Example:**
+```csharp
+// Before
+if (_networkState == NetworkState.Connected)
+{
+    Send(message);
+}
+else if (_networkState == NetworkState.Disconnected)
+{
+    return;
+}
+
+// After
+_networkState.SendAsync(type, message);
+```
+
+```
+// Before
+switch (_state)
+{
+    case State.Connected:
+        Send();
+        break;
+
+    case State.Disconnected:
+        return;
+}
+
+// After
+public interface INetworkState
+{
+    Task SendAsync(DtoType type, IDtoMessage message);
+}
+
+// Example implementation
+public class ConnectedState : INetworkState
+{
+    public Task SendAsync(DtoType type, IDtoMessage message)
+        => _ctx.SendInternal(type, message);
+}
+```
+
+**Reference:** 
+- [INetworkState.cs](ChessApplication/Interfaces/Network/INetworkState.cs)
+- [NetworkStates/States](ChessInfrastructure/NetworkStates/States)
+
+### **5. Replace Nested Conditional with Guard Clauses**
+**Purpose:** Replace nested conditions with early returns
+- Used in `DisconnectInternal`, `SendInternal`, `InitializeAsync`
+- Simplifies control flow
+- Reduces nesting complexity
+
+**Benefits:**
+- Flat control flow
+- Easier readability
+- Fewer branching paths
+
+**Example:**
+```csharp
+// Before
+public async Task SendInternal(...)
+{
+    if (_state != ConnectedState)
+    {
+        if (_state != ReconnectingState)
+        {
+            return;
+        }
+    }
+
+    await _writer.WriteLineAsync(data);
+}
+
+// After
+public async Task SendInternal(...)
+{
+    if (_state is DisconnectedState)
+        return;
+
+    if (_writer is null)
+        return;
+
+    await _writer.WriteLineAsync(data);
+}
+
+```
+
+**Reference:** 
+- [TcpNetworkService.cs](ChessInfrastructure/Network/TcpNetworkService.cs)
 ---

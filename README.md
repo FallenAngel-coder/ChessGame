@@ -7,9 +7,45 @@
 
 A desktop multiplayer chess game that allows two players to play against each other over a Local Area Network (LAN). Built with C# and WPF, featuring professional architecture with SOLID principles, design patterns, and clean code practices.
 
+## Table of Contents
+- [Features](#features)
+- [How to Play](#how-to-play)
+- [Programming Principles](#programming-principles)
+- [Design Patterns](#design-patterns)
+- [Refactoring Techniques](#refactoring-techniques)
+
 ---
 ## Features
 
+### Core Gameplay
+- ✅ Full chess rule implementation (piece movement, capture, check, checkmate, stalemate)
+- ✅ Support for special moves: En Passant, Pawn Promotion
+- ✅ Multiplayer over LAN via TCP/IP networking
+
+### User Interface
+- ✅ Interactive chess board
+- ✅ Highlight available moves for selected piece
+- ✅ Custom cursors for each player side
+- ✅ Settings autoload from json file
+- ✅ Game end detection with result display
+
+### Advanced Features
+- ✅ Network synchronization for multiplayer games
+- ✅ End game rule detection pipeline (Checkmate, Stalemate, Repetition, Insufficient Material)
+- ✅ Efficient board position hashing for game history tracking
+
+---
+## How to play
+
+### Setup
+1. **Player 1:** Clicks "Create Game"
+2. **Player 2:** Enters Player 1's local IP address and clicks "Connect"
+
+### Gameplay
+- Click on a piece to see available moves (highlighted on the board)
+- Click on a highlighted square to move the piece
+- Game automatically detects check, checkmate, and stalemate situations
+- Use the menu to access game settings and history
 
 
 ---
@@ -81,4 +117,39 @@ High-level modules depend on abstractions, not concrete implementations:
 
 **Reference:** [BaseViewModel.cs](ChessGame/ViewModel/Base/BaseViewModel.cs)
 
+## Design Patterns
+
+### **1. Factory Pattern**
+**Purpose:** Encapsulate object creation and manage complex dependencies
+- `IPieceFactory` - creates pieces with appropriate move strategies
+- `IBoardFactory` - creates initialized game boards
+- `IGameStateFactory` - creates game state instances
+- `ISubPieceFactory` - individual piece factory interface for each piece type
+
+**Reference:** 
+- [IPieceFactory.cs](ChessLibrary/Factories/IPieceFactory.cs)
+- [PieceFactory.cs](ChessLibrary/Factories/PieceFactory.cs)
+
+### **2. Chain of Responsibility Pattern**
+**Purpose:** Pass requests along a chain of handlers until one handles it
+- `EndGameEvaluator` - chains multiple end-game rules
+- `EndGameRuleHandler` - abstract base handler
+- `CheckmateRule`, `StalemateRule`, `RepetitionRule`, `InsufficientMaterial` - handlers
+- Each rule checks condition; if satisfied, returns result; otherwise passes to next
+
+**Reference:** 
+- [EndGameEvaluator.cs](ChessLibrary/Rules/EndGameEvaluator.cs)
+- [EndGameRuleHandler.cs](ChessLibrary/Rules/GameEnd/EndGameRuleHandler.cs)
+
+### **3. Memento Pattern**
+**Purpose:** Capture and externalize object state without violating encapsulation
+- `GameStateMemento` - immutable snapshot of game state
+- `GameState` - originator that creates and restores mementos
+- `GameHistoryService` - caretaker that manages memento collection
+- Enables undo/redo functionality without exposing internal details
+
+**Reference:** 
+- [GameStateMemento.cs](ChessLibrary/Game/GameStateMemento.cs)
+- [GameState.cs](ChessLibrary/Game/GameState.cs)
+- [GameHistoryService.cs](ChessApplication/Services/Game/GameHistoryService.cs)
 ---
